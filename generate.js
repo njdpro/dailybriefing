@@ -229,4 +229,7 @@ const filename = `episode-${date}.mp3`;
 fs.writeFileSync(filename, mp3);
 
 updateRSS(filename);
+}
+
+run();
 
