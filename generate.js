@@ -183,11 +183,14 @@ async function getScript(prompt) {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
     },
-    body: JSON.stringify({
-      model: process.env.COHERE_MODEL || "command-a-plus-05-2026",
-      max_tokens: 3500,
-      temperature: 0.5,
-      messages: [
+   body: JSON.stringify({
+  model: process.env.COHERE_MODEL || "command-a-plus-05-2026",
+  max_tokens: 3500,
+  temperature: 0.5,
+  thinking: {
+    type: "disabled"
+  },
+  messages: [
         {
           role: "system",
           content: "You write factual, polished spoken-word news scripts."
@@ -201,9 +204,21 @@ async function getScript(prompt) {
   if (!res.ok) throw new Error(`Cohere ${res.status}: ${body.slice(0, 1000)}`);
 
   const data = JSON.parse(body);
-  const script = data?.message?.content?.find(part => part.type === "text")?.text?.trim();
-  if (!script) throw new Error(`Cohere returned no text: ${body.slice(0, 1000)}`);
-  return script;
+  const content = data?.message?.content || [];
+
+const script = content
+  .filter(part => part.type === "text" && part.text)
+  .map(part => part.text)
+  .join("\n")
+  .trim();
+
+if (!script) {
+  throw new Error(
+    `Cohere returned no usable text. finish_reason=${data?.finish_reason || "unknown"}`
+  );
+}
+
+return script;
 }
 
 function splitForTTS(text, maxBytes = TTS_CHUNK_BYTES) {
