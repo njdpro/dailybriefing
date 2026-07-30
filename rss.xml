@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
-<channel>
-  <title>Davis Daily Briefing</title>
-  <link>https://njdpro.github.io/dailybriefing/</link>
-  <description>Your automated daily morning radio show.</description>
-
-  
-</channel>
+<rss version="2.0"
+     xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+  <channel>
+    <title>Davis Daily Briefing</title>
+    <link>https://njdpro.github.io/dailybriefing/</link>
+    <description>Your automated daily morning radio show.</description>
+    <language>en-us</language>
+    <itunes:author>Davis Daily Briefing</itunes:author>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+    <itunes:category text="News"/>
+  </channel>
 </rss>
