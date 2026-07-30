@@ -3,32 +3,36 @@ name: Daily Briefing
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 11 * * *"  # 6 AM CDT / 11:00 UTC
+    - cron: "0 11 * * *"
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Install
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Generate Episode
+        run: node generate.js
 
-      - name: Check generate.js
-        run: |
-          nl -ba generate.js | head -30
-          node --check generate.js
-  
-      - name: Commit
+      - name: Show repo files (debug)
+        run: ls -la
+
+      - name: Commit and push (safety)
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
