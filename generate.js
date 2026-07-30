@@ -227,6 +227,8 @@ async function run() {
   const prompt = buildPrompt({ weather, history, headlines });
 
   const script = await getScript(prompt);
+  console.log("SCRIPT LENGTH:", script?.length);
+
   if (!script) {
     console.error("Cohere returned no script.");
     return;
