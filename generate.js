@@ -6,9 +6,9 @@ import { DateTime } from "luxon";
 const TZ = process.env.TIMEZONE || "America/Chicago";
 
 const BASE_URL = (
-process.env.BASE_URL ||
-"https://njdpro.github.io/dailybriefing"
-).replace(//$/, "");
+  process.env.BASE_URL ||
+  "https://njdpro.github.io/dailybriefing"
+).replace(/\/$/, "");
 
 const FEED_FILE = "./rss.xml";
 const MAX_RSS_ITEMS = Number(process.env.MAX_RSS_ITEMS || 30);
