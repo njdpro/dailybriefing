@@ -221,5 +221,12 @@ async function run() {
     return;
   }
 
-  const mp3 = await textToSpeech(script);
-  const filename
+ const mp3 = await textToSpeech(script);
+
+const date = DateTime.now().setZone("America/Chicago").toFormat("yyyy-MM-dd");
+const filename = `episode-${date}.mp3`;
+
+fs.writeFileSync(filename, mp3);
+
+updateRSS(filename);
+
