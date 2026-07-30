@@ -6,14 +6,13 @@ import { DateTime } from "luxon";
 const TZ = process.env.TIMEZONE || "America/Chicago";
 
 const BASE_URL = (
-  process.env.BASE_URL ||
-  "https://njdpro.github.io/dailybriefing"
-).replace(/\/$/, "");
+process.env.BASE_URL ||
+"https://njdpro.github.io/dailybriefing"
+).replace(//$/, "");
 
 const FEED_FILE = "./rss.xml";
 const MAX_RSS_ITEMS = Number(process.env.MAX_RSS_ITEMS || 30);
 const TTS_CHUNK_BYTES = 4500;
-
 
 // -----------------------------------------------------------------------------
 // Utilities
@@ -88,7 +87,9 @@ new RegExp(
 )
 );
 
-if (!match) return "";
+if (!match) {
+return "";
+}
 
 return stripHtml(
 match[1]
@@ -387,7 +388,8 @@ const chunks = [];
 let current = "";
 
 for (const sentence of sentences) {
-const trimmedSentence = sentence.trim();
+const trimmedSentence =
+sentence.trim();
 
 ```
 const candidate = current
@@ -407,8 +409,10 @@ if (current) {
 }
 
 if (
-  Buffer.byteLength(trimmedSentence, "utf8") <=
-  maxBytes
+  Buffer.byteLength(
+    trimmedSentence,
+    "utf8"
+  ) <= maxBytes
 ) {
   current = trimmedSentence;
   continue;
@@ -418,7 +422,9 @@ if (
 // split on whitespace without exceeding byte limit.
 let piece = "";
 
-for (const word of trimmedSentence.split(/\s+/)) {
+for (const word of trimmedSentence.split(
+  /\s+/
+)) {
   const candidatePiece = piece
     ? `${piece} ${word}`
     : word;
@@ -455,17 +461,22 @@ return chunks;
 // Google TTS + FFmpeg
 // -----------------------------------------------------------------------------
 
-async function textToSpeech(text, outputFile) {
-const apiKey = requireEnv("GOOGLE_TTS_API_KEY");
+async function textToSpeech(
+text,
+outputFile
+) {
+const apiKey =
+requireEnv("GOOGLE_TTS_API_KEY");
 
 const chunks = splitForTTS(text);
 
-// Use absolute paths so FFmpeg's working directory cannot
-// accidentally cause the finished MP3 to be deleted.
+// IMPORTANT:
+// Both paths are absolute. The final MP3 is outside .tts,
+// so deleting .tts cannot delete the finished episode.
 const tempDir = path.resolve("./.tts");
-const finalOutput = path.resolve(outputFile);
+const finalOutput =
+path.resolve(outputFile);
 
-// Start clean.
 fs.rmSync(tempDir, {
 recursive: true,
 force: true
@@ -475,12 +486,11 @@ fs.mkdirSync(tempDir, {
 recursive: true
 });
 
-console.log(`TTS: ${chunks.length} chunks`);
+console.log(
+`TTS: ${chunks.length} chunks`
+);
 
-// ---------------------------------------------------------------------------
-// Generate individual MP3 chunks
-// ---------------------------------------------------------------------------
-
+// Generate individual MP3 chunks.
 for (let i = 0; i < chunks.length; i++) {
 const res = await fetch(
 "https://texttospeech.googleapis.com/v1/text:synthesize?key=" +
@@ -505,7 +515,8 @@ process.env.TTS_VOICE ||
 audioConfig: {
 audioEncoding: "MP3",
 speakingRate: Number(
-process.env.TTS_SPEAKING_RATE || 1.0
+process.env.TTS_SPEAKING_RATE ||
+1.0
 )
 }
 })
@@ -537,7 +548,10 @@ if (!data.audioContent) {
 
 const partPath = path.join(
   tempDir,
-  `part-${String(i).padStart(4, "0")}.mp3`
+  `part-${String(i).padStart(
+    4,
+    "0"
+  )}.mp3`
 );
 
 fs.writeFileSync(
@@ -551,10 +565,7 @@ fs.writeFileSync(
 
 }
 
-// ---------------------------------------------------------------------------
-// Build FFmpeg concat file
-// ---------------------------------------------------------------------------
-
+// Build FFmpeg concat file.
 const concatFile = path.join(
 tempDir,
 "concat.txt"
@@ -562,7 +573,10 @@ tempDir,
 
 const partFiles = chunks.map(
 (_, i) =>
-`part-${String(i).padStart(4, "0")}.mp3`
+`part-${String(i).padStart(
+        4,
+        "0"
+      )}.mp3`
 );
 
 fs.writeFileSync(
@@ -577,10 +591,6 @@ file =>
 )
 .join("\n")
 );
-
-// ---------------------------------------------------------------------------
-// Combine MP3 chunks
-// ---------------------------------------------------------------------------
 
 try {
 execFileSync(
@@ -607,15 +617,15 @@ stdio: "inherit"
 );
 
 ```
-// Critical safety check:
-// FFmpeg must have created the final MP3 outside .tts.
+// Verify FFmpeg actually created the final MP3.
 if (!fs.existsSync(finalOutput)) {
   throw new Error(
     `FFmpeg completed but did not create ${finalOutput}`
   );
 }
 
-const stats = fs.statSync(finalOutput);
+const stats =
+  fs.statSync(finalOutput);
 
 if (stats.size === 0) {
   throw new Error(
@@ -633,7 +643,7 @@ throw new Error(
 `ffmpeg could not combine the TTS chunks: ${error.message}`
 );
 } finally {
-// Safe now because finalOutput is outside tempDir.
+// The final MP3 is outside .tts, so this is safe.
 fs.rmSync(tempDir, {
 recursive: true,
 force: true
@@ -660,16 +670,18 @@ rssPath,
 
 const itemXml = `   <item>     <title>Davis Briefing — ${escapeXml(
       date.toFormat("MMMM d, yyyy")
-    )}</title>     <description>Daily morning news briefing for the Davis family.</description>     <enclosure
+    )}</title>     <description>
+      Daily morning news briefing for the Davis family.     </description>     <enclosure
       url="${escapeXml(
         `${BASE_URL}/${filename}`
       )}"
       length="${fileSize}"
       type="audio/mpeg"/>     <pubDate>${date
       .toUTC()
-      .toString()}</pubDate>     <guid isPermaLink="false">davis-briefing-${date.toFormat(
-      "yyyy-MM-dd"
-    )}</guid>   </item>`;
+      .toString()}</pubDate>     <guid isPermaLink="false">
+      davis-briefing-${date.toFormat(
+        "yyyy-MM-dd"
+      )}     </guid>   </item>`;
 
 const items = [
 ...existing.matchAll(
@@ -763,7 +775,8 @@ return Math.round(
 // -----------------------------------------------------------------------------
 
 async function run() {
-const date = DateTime.now().setZone(TZ);
+const date =
+DateTime.now().setZone(TZ);
 
 const dateKey =
 date.toFormat("yyyy-MM-dd");
@@ -775,10 +788,7 @@ console.log(
 `Generating ${filename} for ${date.toISO()}`
 );
 
-// ---------------------------------------------------------------------------
-// Gather news
-// ---------------------------------------------------------------------------
-
+// Gather news.
 const headlines = {
 global: await safeRSS(
 "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
@@ -814,20 +824,14 @@ lawrence: await safeRSS(
 
 };
 
-// ---------------------------------------------------------------------------
-// Weather and history
-// ---------------------------------------------------------------------------
-
+// Weather and history.
 const weather =
 await getWeather();
 
 const history =
 await getHistory();
 
-// ---------------------------------------------------------------------------
-// Generate script
-// ---------------------------------------------------------------------------
-
+// Generate script.
 const prompt = buildPrompt({
 weather,
 history,
@@ -844,19 +848,13 @@ console.log(
 `Script: ${script.length} characters, ~${wordCount} words`
 );
 
-// ---------------------------------------------------------------------------
-// Generate audio
-// ---------------------------------------------------------------------------
-
+// Generate audio.
 await textToSpeech(
 script,
 filename
 );
 
-// ---------------------------------------------------------------------------
-// Verify final MP3
-// ---------------------------------------------------------------------------
-
+// Verify final MP3.
 if (!fs.existsSync(filename)) {
 throw new Error(
 `Expected MP3 was not created: ${filename}`
@@ -866,14 +864,17 @@ throw new Error(
 const stats =
 fs.statSync(filename);
 
+if (stats.size === 0) {
+throw new Error(
+`Expected MP3 is empty: ${filename}`
+);
+}
+
 console.log(
 `Final MP3 verified: ${filename} (${stats.size} bytes)`
 );
 
-// ---------------------------------------------------------------------------
-// Update RSS
-// ---------------------------------------------------------------------------
-
+// Update RSS.
 updateRSS({
 filename,
 date,
