@@ -135,13 +135,24 @@ async function getScript(prompt) {
     },
     body: JSON.stringify({
       model: "command-r-plus-08-2024",
-      messages: [{ role: "user", content: prompt }]
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt }
+          ]
+        }
+      ]
     })
   });
 
   const data = await res.json();
+
+  console.log("COHERE RAW RESPONSE:", JSON.stringify(data, null, 2));
+
   return data?.message?.content?.[0]?.text || null;
 }
+
 
 // ------------------------------------------------------------
 // Google TTS
