@@ -34,5 +34,21 @@
     <guid>https://njdpro.github.io/dailybriefing/episode-2026-07-30.mp3</guid>
   </item>
 
+
+  <item>
+    <title>Davis Briefing — July 31, 2026</title>
+    <enclosure url="https://njdpro.github.io/dailybriefing/episode-2026-07-31.mp3" type="audio/mpeg" />
+    <pubDate>Fri, 31 Jul 2026 17:00:09 GMT</pubDate>
+    <guid>https://njdpro.github.io/dailybriefing/episode-2026-07-31.mp3</guid>
+  </item>
+
+
+  <item>
+    <title>Davis Briefing — July 31, 2026</title>
+    <enclosure url="https://njdpro.github.io/dailybriefing/episode-2026-07-31-forced.mp3" type="audio/mpeg" />
+    <pubDate>Fri, 31 Jul 2026 17:00:09 GMT</pubDate>
+    <guid>https://njdpro.github.io/dailybriefing/episode-2026-07-31-forced.mp3</guid>
+  </item>
+
 </channel>
 </rss>
