@@ -258,5 +258,21 @@
     <guid>https://njdpro.github.io/dailybriefing/episode-2026-08-14-forced.mp3</guid>
   </item>
 
+
+  <item>
+    <title>Davis Briefing — August 15, 2026</title>
+    <enclosure url="https://njdpro.github.io/dailybriefing/episode-2026-08-15.mp3" type="audio/mpeg" />
+    <pubDate>Sat, 15 Aug 2026 11:39:32 GMT</pubDate>
+    <guid>https://njdpro.github.io/dailybriefing/episode-2026-08-15.mp3</guid>
+  </item>
+
+
+  <item>
+    <title>Davis Briefing — August 15, 2026</title>
+    <enclosure url="https://njdpro.github.io/dailybriefing/episode-2026-08-15-forced.mp3" type="audio/mpeg" />
+    <pubDate>Sat, 15 Aug 2026 11:39:32 GMT</pubDate>
+    <guid>https://njdpro.github.io/dailybriefing/episode-2026-08-15-forced.mp3</guid>
+  </item>
+
 </channel>
 </rss>
